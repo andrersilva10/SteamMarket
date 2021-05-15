@@ -35,7 +35,7 @@ namespace Services
             }
         }
 
-        public async Task<Inventario> ObterItensDeUmInventarioAsync(string url)
+        public async Task<Inventario> ObterInventarioAsync(string url)
         {
             try
             {
@@ -44,41 +44,49 @@ namespace Services
                 var responseObj = await ObterGenerico(url);
                 dataStr = JsonConvert.SerializeObject(responseObj);
                 inventarioDeserializado = JsonConvert.DeserializeObject<Inventario>(dataStr);
-                
+                await ObterPrecosDosItensDoInventario(inventarioDeserializado);
                 return inventarioDeserializado;
             }
-            catch (Exception)
+            catch (Exception err)
             {
-                throw new Exception("error connecting to the CoinLore API");
+                throw err;
             }
         }
 
-        //public async Task<Inventario> ObterItensDeUmInventarioAsync(string url)
-        //{
-        //    try
-        //    {
-        //        var response = await _httpClient.GetAsync(url);
+        private async Task ObterPrecosDosItensDoInventario(Inventario inventario)
+        {
+            var urlBase = "https://steamcommunity.com/market/priceoverview/?appid=730&currency=7&market_hash_name=";
+            foreach (var item in inventario.Descriptions)
+            {
+                try
+                {
+                    var marketHashName = Uri.EscapeUriString(item.MarketHashName);
+                    var url = urlBase + marketHashName;
+                    var responseObj = await ObterGenerico(url);
+                    item.LowestPrice = ConverteStringParaDecimal(responseObj["lowest_price"].ToString());
+                    item.MedianPrice = ConverteStringParaDecimal(responseObj["median_price"].ToString());
+                    item.Volume = (int)ConverteStringParaDecimal(responseObj["volume"].ToString());
+                }
+                catch(Exception err)
+                {
 
-        //        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        //        {
-        //            var responseObj = new Dictionary<string, object>();
-        //            var dataStr = "";
-        //            var inventarioDeserializado = null as Inventario;
-        //            using (System.IO.StreamReader sr = new System.IO.StreamReader(await response.Content.ReadAsStreamAsync()))
-        //            {
-        //                responseObj = JsonConvert.DeserializeObject<Dictionary<string, object>>(sr.ReadToEnd());
-        //                dataStr = JsonConvert.SerializeObject(responseObj);
+                }
 
-        //                inventarioDeserializado = JsonConvert.DeserializeObject<Inventario>(dataStr);
-        //            }
-        //            return inventarioDeserializado;
-        //        }
-        //        return new Inventario();
-        //    }
-        //    catch (Exception)
-        //    {
-        //        throw new Exception("error connecting to the CoinLore API");
-        //    }
-        //}
+            }
+        }
+
+        private decimal ConverteStringParaDecimal(string precoStr)
+        {
+            var pattern = @"(?<moeda>R\$|\$)";
+            var regex = new System.Text.RegularExpressions.Regex(pattern);
+            var match = regex.Match(precoStr);
+            if(match.Success && match.Groups.Count > 0)
+            {
+                var moeda = match.Groups["moeda"].ToString();
+                var preco = Convert.ToDecimal(precoStr.Replace(moeda, ""));
+                return preco;
+            }
+            throw new Exception("Não foi possivel converter a moeda");
+        }
     }
 }

@@ -21,5 +21,10 @@ namespace Models
         public string MarketName { get; set; }
         [JsonProperty("market_hash_name")]
         public string MarketHashName { get; set; }
+        [JsonProperty("lowest_price")]
+        public decimal LowestPrice { get; set; }
+        [JsonProperty("median_price")]
+        public decimal MedianPrice { get; set; }
+        public int Volume { get; set; }
     }
 }
