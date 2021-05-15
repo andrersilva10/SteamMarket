@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{5C9942FC-E4FE-4BFF-A04B-E41FF2D31D5E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.csproj", "{7F07A4BC-23D0-4BF0-AB88-DA402863AF4B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Service\Services.csproj", "{7F07A4BC-23D0-4BF0-AB88-DA402863AF4B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestaTudo", "TestaTudo\TestaTudo.csproj", "{0EB198C5-7667-43B7-BAEB-2510E9FBFA34}"
 EndProject
